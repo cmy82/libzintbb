@@ -4,7 +4,6 @@ ZINT_VERSION_D:=-DZINT_VERSION=\"2.4.3.0\"
 ZINT_VERSION = 2.4.3.0
 
 #Includes
-#LIBS:= `libpng15-config --I_opts --L_opts --ldflags` -lz -lm
 ILIBS = -lpng16 -lz -lm
 IDIR_LIST = . $(QNX_TARGET)/usr/local/libpng16
 IDIRS     = $(foreach d, $(IDIR_LIST), -I$d)
@@ -37,14 +36,7 @@ TWODIM_OBJS= $(TWODIM_SRCS:.c=.o)
 libzintbb: clean \
            $(foreach d, $(COMMON_SRCS), $(SRC_DIR)/$d) $(foreach d, $(POSTAL_SRCS), $(SRC_DIR)/$d) \
            $(foreach d, $(ONEDIM_SRCS), $(SRC_DIR)/$d) $(foreach d, $(TWODIM_SRCS), $(SRC_DIR)/$d)
-	mkdir -p $(LIB_DIR)
-#	$(CC) $(CCFLAGS) $(ZINT_VERSION_D) $(IDIRS) -c $(foreach d, $(COMMON_SRCS), $(SRC_DIR)/$d)
-#	$(CC) $(CCFLAGS) $(ZINT_VERSION_D) $(IDIRS) -c $(foreach d, $(POSTAL_SRCS), $(SRC_DIR)/$d)
-#	$(CC) $(CCFLAGS) $(ZINT_VERSION_D) $(IDIRS) -c $(foreach d, $(ONEDIM_SRCS), $(SRC_DIR)/$d)
-#	$(CC) $(CCFLAGS) $(ZINT_VERSION_D) $(IDIRS) -c $(foreach d, $(TWODIM_SRCS), $(SRC_DIR)/$d)
-#	$(AR) rcvs libzintbb.a.$(ZINT_VERSION) $(COMMON_OBJS) $(POSTAL_OBJS) $(ONEDIM_OBJS) $(TWODIM_OBJS) $(ILIBS)
-#	mv libzintbb.a.$(ZINT_VERSION) $(LIB_DIR)
-#	rm -fv $(COMMON_OBJS) $(POSTAL_OBJS) $(ONEDIM_OBJS) $(TWODIM_OBJS)
+	mkdir -p $(LIB_DIR) $(OBJ_DIR)
 	$(CC) $(CCFLAGS) $(ZINT_VERSION_D) $(IDIRS) -c -fPIC $(foreach d, $(COMMON_SRCS), $(SRC_DIR)/$d)
 	$(CC) $(CCFLAGS) $(ZINT_VERSION_D) $(IDIRS) -c -fPIC $(foreach d, $(POSTAL_SRCS), $(SRC_DIR)/$d)
 	$(CC) $(CCFLAGS) $(ZINT_VERSION_D) $(IDIRS) -c -fPIC $(foreach d, $(ONEDIM_SRCS), $(SRC_DIR)/$d)
@@ -53,11 +45,12 @@ libzintbb: clean \
          -o libzintbb.so.$(ZINT_VERSION) $(COMMON_OBJS) $(POSTAL_OBJS) $(ONEDIM_OBJS) $(TWODIM_OBJS) $(ILIBS)
 	mv libzintbb.so.$(ZINT_VERSION) $(LIB_DIR)
 	cp $(LIB_DIR)/libzintbb.so.$(ZINT_VERSION) $(LIB_DIR)/libzintbb.so
-	rm -fv $(COMMON_OBJS) $(POSTAL_OBJS) $(ONEDIM_OBJS) $(TWODIM_OBJS)
+	mv -v *.o $(OBJ_DIR)
 
 clean:
 	rm -fv $(COMMON_OBJS) $(POSTAL_OBJS) $(ONEDIM_OBJS) $(TWODIM_OBJS)
 	rm -fv $(LIB_DIR)/*
+	rm -fv $(OBJ_DIR)/*
 
 all: libzintbb
 	@:
